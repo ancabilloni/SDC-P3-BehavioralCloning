@@ -33,8 +33,8 @@ Deep Learning training is on **Track 1** data. To pass the project, the car has 
 For self evaluation, the model can successfully drive the entire **Track 2** without getting off the road.
 
 ## Approach
-To have any idea to start this project, [End to End Learning for Self-Driving Cars](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf) by Nvidia is a great place to read.
-From the paper, data collection is the first important part. Per project requirement, data collection can only performed on **Track 1**. User drives about 4 laps around **Track 1** by keyboard control to collect data. The experimence wasn't extrememly smooth as actual driving. So user decides to use Udacity sample data as starting point.
+To have any idea to start this project, [End to End Learning for Self-Driving Cars](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf) by Nvidia is a great place to start.
+From the paper, data collection is the first important part. Per project requirement, data collection can only performed on **Track 1**. User drives about 4 laps around **Track 1** by keyboard control to collect data. The driving wasn't extrememly smooth as actual driving. So I decide to use Udacity sample data as starting point.
 
 ### Understanding Data
 There are 3 cameras on the car which shows left, center and right images for each steering angle. 
@@ -46,6 +46,10 @@ After recording and save data, the simulator saves all the frame images in `IMG`
 ![driving_log](https://cloud.githubusercontent.com/assets/23693651/22401702/65c154a6-e5ab-11e6-966f-c39d0f6aaa9c.png)
 
 In this project, we only need to predict steering angle. So we will ignore throttle, brake and speed information.
+### Training and Validation
+Central images and steering angles are shuffle and split into 90/10 for Training/Validation using `shuffle` & `train_test_split` from `sklearn`
+
+Training data is then divided into 3 lists, driving straight, driving left, driving right which are determined by thresholds of angle limit. Any angle > 0.15 is turning right, any angle < -0.15 is turning right, anything around 0 or near zero is driving straight.
 
 ### Argumentation
 From the observation in both tracks, there are many factor of road condition and environment to account for. Below are argumentation methods:
@@ -66,7 +70,7 @@ But by inutition, if our car goes off lane (for example, distraction during text
 >In the simulator, you can weave all over the road and turn recording on and off. In a real car, however, that’s not really possible. At least not legally.
 >So in a real car, we’ll have multiple cameras on the vehicle, and we’ll map recovery paths from each camera. **For example, if you train the model to associate a given image from the center camera with a left turn, then you could also train the model to associate the corresponding image from the left camera with a somewhat softer left turn. And you could train the model to associate the corresponding image from the right camera with an even harder left turn.
 
-So the job is to determine when the car is turning left or right, pick out a set of its left or right images and add/subject with adjustment angle. The logic here is:
+So the task is to determine when the car is turning left or right, pick out a set of its left or right images and add/subtract with an adjustment angle. The chosen left/right images and adjusted angles are then added into driving left or driving right lists. Here is the logic:
   1. Left turn: + adjustment_angle on left image, - adjustment_angle on right image
   2. Right turn: +adjustment_angle on right image, -adjustment_angle on left image
 
@@ -75,14 +79,19 @@ So the job is to determine when the car is turning left or right, pick out a set
 2. To help running a smaller training model, images are scaled to (64x64) size from after cropping size (80x320).
 
 ### Generators
-The model is trained using Keras with Tensorflow backend. User goal is to not generate extra data from what has been collected. To help always getting new training samples by apply random argumentation, fit_generator() is used to fit the training model.
+The model is trained using Keras with Tensorflow backend. My goal is to not generate extra data from what has been collected. To help always getting new training samples by apply random argumentation, fit_generator() is used to fit the training model.
 
 There are two generators in this project. **Training generator** is to generate samples per batches to feed into fit_generator(). At each batch, random samples are picked, applied argumentation and preprocessing . So training samples feeding into model is always different. **Validation generator** is also to feed random samples in batches for validation, unlike training generator, only central images are used here and only proprocessing is applied.
 
 ### Training
-Training model is inspired by Nvidia model. Some changes are less 1 less convolution layers, smaller dense() parameters and many layers of Relu, Dropout, Regularization are applied to prevent overfitting.
-Saved training trained with 20 epoch. To run training: `python model.py --epoch 20`
+After many trial and error in modify Nvidia model, below are my best working model.
+- 1st layer: normalize input image to -0.5 to 0.5 range.
+1. First phrase: 3 convolution layers are applied with 5x5 filter size but the depth increases at each layer such as 24, 36, 48. Then, 2 convolution layers are applied with 3x3 filter size and 64 depth. To avoid overfitting at convolution layers, Relu activation is applied after every convolution layers.
+2. Second phrase: data from previous layer are flatten. Then dense to 80, 40, 16, 10 and 1. At each dense layer, 50% Dropout is also applied for the first 3 dense layer to avoid overfitting.
+ With recommend from other students, L2 weight regularization is also applied in every convolution and dense layer to produce a smoother driving performance. After many trial and error, 0.001 produce best peformance for this model.
+3. For optimizer, Adam optimizer is used. I started with 0.001 training rate but 0.0001 seems to produce a smoother ride. Therefore, I kept 0.0001 learning rate.
 
+The final working weight was trained with 20 epoch, 0.27 adjustment angle and 128 batch size. To run training: `python model.py --epoch 20`
 ![architecture](https://cloud.githubusercontent.com/assets/23693651/22402330/ac793d4a-e5c0-11e6-9c41-a014fe3dd1a7.png)
 ![training2](https://cloud.githubusercontent.com/assets/23693651/22402343/f892ac92-e5c1-11e6-82da-ce39e51a96be.png)
 
@@ -91,7 +100,12 @@ Use the training model that was saved in `model.json`, and weights in `model.h5`
 
 To run test: `python drive.py model.json`
 
+![track1](https://github.com/annyhere/SDC-P3-BehavioralCloning/blob/master/track1.gif)
+![track2](https://github.com/annyhere/SDC-P3-BehavioralCloning/blob/master/track2.gif)
 
-
+### Future work
+1. Find a way to collect personal good data to train.
+2. Try out comma.ai and VGG16 model, as other students were successfully using those model.
+2. Looking into even a smaller working architecture and making shorter code.
 
 
