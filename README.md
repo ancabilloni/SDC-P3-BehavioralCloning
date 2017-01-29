@@ -34,7 +34,7 @@ For self evaluation, the model can successfully drive the entire **Track 2** wit
 
 ## Approach
 To have any idea to start this project, [End to End Learning for Self-Driving Cars](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf) by Nvidia is a great place to start.
-From the paper, data collection is the first important part. Per project requirement, data collection can only performed on **Track 1**. User drives about 4 laps around **Track 1** by keyboard control to collect data. The driving wasn't extrememly smooth as actual driving. So I decide to use Udacity sample data as starting point.
+From the paper, data collection is the first important part. Per project requirement, data collection can only performed on **Track 1**. I drove about 4 laps around **Track 1** by keyboard control to collect data. The driving wasn't extrememly smooth as actual driving. So I decided to use Udacity sample data as starting point.
 
 ### Understanding Data
 There are 3 cameras on the car which shows left, center and right images for each steering angle. 
@@ -49,7 +49,7 @@ In this project, we only need to predict steering angle. So we will ignore throt
 ### Training and Validation
 Central images and steering angles are shuffle and split into 90/10 for Training/Validation using `shuffle` & `train_test_split` from `sklearn`
 
-Training data is then divided into 3 lists, driving straight, driving left, driving right which are determined by thresholds of angle limit. Any angle > 0.15 is turning right, any angle < -0.15 is turning right, anything around 0 or near zero is driving straight.
+Training data is then divided into 3 lists, driving straight, driving left, driving right which are determined by thresholds of angle limit. Any angle > 0.15 is turning right, any angle < -0.15 is turning left, anything around 0 or near 0 is driving straight.
 
 ### Argumentation
 From the observation in both tracks, there are many factor of road condition and environment to account for. Below are argumentation methods:
@@ -66,17 +66,17 @@ In general sense, driving behavior can be trained using the central images becau
 ![scatter](https://cloud.githubusercontent.com/assets/23693651/22402161/495cf170-e5bb-11e6-85cb-33bca2ba276f.png)
 ![distribution](https://cloud.githubusercontent.com/assets/23693651/22402177/905481e2-e5bb-11e6-9c61-82df41884ba0.png)
 
-But by inutition, if our car goes off lane (for example, distraction during text and drive), we can adjust it back on track right away. The machine doesn't have this intuition, so once it goes off road it would be hard to recover. To teach the machine this kind of intuion, we have to show it the scenarios. Hence, we use left and right camera images. Udacity gives out a great hint how to apply this method.
+But from inutition, if our car goes off lane (for example, distraction during text and drive), we can adjust it back on track right away. The machine doesn't have this intuition, so once it goes off road it would be hard to recover. To teach the machine this kind of recovery knowledge, we have to show it the scenarios. Hence, we use left and right camera images. Udacity gives out a great hint how to apply this method.
 >In the simulator, you can weave all over the road and turn recording on and off. In a real car, however, that’s not really possible. At least not legally.
 >So in a real car, we’ll have multiple cameras on the vehicle, and we’ll map recovery paths from each camera. **For example, if you train the model to associate a given image from the center camera with a left turn, then you could also train the model to associate the corresponding image from the left camera with a somewhat softer left turn. And you could train the model to associate the corresponding image from the right camera with an even harder left turn.
 
-So the task is to determine when the car is turning left or right, pick out a set of its left or right images and add/subtract with an adjustment angle. The chosen left/right images and adjusted angles are then added into driving left or driving right lists. Here is the logic:
+So the task is to determine when the car is turning left or right, pick out a set of its left or right images and add/subtract with an adjustment angle for recovery. The chosen left/right images and adjusted angles are then added into driving left or driving right lists. Here is the logic:
   1. Left turn: + adjustment_angle on left image, - adjustment_angle on right image
-  2. Right turn: +adjustment_angle on right image, -adjustment_angle on left image
+  2. Right turn: + adjustment_angle on right image, - adjustment_angle on left image
 
 ### Preprocessing
 1. To help the system avoid learning other part of the image but only the track, user crops out the sky and car deck parts in the image. Original image size (160x320), after cropping 60px on top and 20px on the bottom, new image size is (80x320).
-2. To help running a smaller training model, images are scaled to (64x64) size from after cropping size (80x320).
+2. To help running a smaller training model, images are scaled to (64x64) size from cropped size (80x320).
 
 ### Generators
 The model is trained using Keras with Tensorflow backend. My goal is to not generate extra data from what has been collected. To help always getting new training samples by apply random argumentation, fit_generator() is used to fit the training model.
