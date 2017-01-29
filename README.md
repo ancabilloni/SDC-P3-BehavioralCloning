@@ -92,7 +92,9 @@ After many trial and error in modify Nvidia model, below are my best working mod
 3. For optimizer, Adam optimizer is used. I started with 0.001 training rate but 0.0001 seems to produce a smoother ride. Therefore, I kept 0.0001 learning rate.
 
 The final working weight was trained with 20 epoch, 0.27 adjustment angle and 128 batch size. To run training: `python model.py --epoch 20`
+
 ![architecture](https://cloud.githubusercontent.com/assets/23693651/22402330/ac793d4a-e5c0-11e6-9c41-a014fe3dd1a7.png)
+
 ![training2](https://cloud.githubusercontent.com/assets/23693651/22402343/f892ac92-e5c1-11e6-82da-ce39e51a96be.png)
 
 ### Testing
@@ -101,9 +103,10 @@ Use the training model that was saved in `model.json`, and weights in `model.h5`
 To run test: `python drive.py model.json`
 
 ![track1](https://github.com/annyhere/SDC-P3-BehavioralCloning/blob/master/track1.gif)
+
 ![track2](https://github.com/annyhere/SDC-P3-BehavioralCloning/blob/master/track2.gif)
 
-### Future work
+# Future work
 1. Find a way to collect personal good data to train.
 2. Try out comma.ai and VGG16 model, as other students were successfully using those model.
 2. Looking into even a smaller working architecture and making shorter code.
