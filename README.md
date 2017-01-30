@@ -108,8 +108,7 @@ To run test: `python drive.py model.json`
 
 # Future work
 1. Find a way to collect personal good data to train. :white_check_mark:
-Successfully collected data using keyboard driving to pass Track 1
-![track1self](https://youtu.be/mR6Gswp5Xmo)
+Successfully collected data using keyboard driving to pass Track 1 https://youtu.be/mR6Gswp5Xmo
 2. Try out comma.ai and VGG16 model, as other students were successfully using those model.
 2. Looking into even a smaller working architecture and making shorter code.
 
