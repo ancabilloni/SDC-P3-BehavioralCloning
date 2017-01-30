@@ -118,7 +118,7 @@ def generator_data(batch_size):
         data, angle = shuffle(X_train, y_train)
         for i in range(batch_size):
           choice = int(np.random.choice(len(data),1))
-          batch_train[i] = crop_resize(random_brightness(mpimg.imread(data[choice])))
+          batch_train[i] = crop_resize(random_brightness(mpimg.imread(data[choice].strip())))
           batch_angle[i] = angle[choice]*(1+ np.random.uniform(-0.10,0.10))
           #Flip random images#
           flip_coin = random.randint(0,1)
@@ -135,7 +135,7 @@ def generator_valid(data, angle, batch_size):
       data, angle = shuffle(data,angle)
       for i in range(batch_size):
         rand = int(np.random.choice(len(data),1))
-        batch_train[i] = crop_resize(mpimg.imread(data[rand]))
+        batch_train[i] = crop_resize(mpimg.imread(data[rand].strip()))
         batch_angle[i] = angle[rand]
       yield batch_train, batch_angle
 
