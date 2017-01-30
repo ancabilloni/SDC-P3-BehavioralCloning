@@ -68,7 +68,7 @@ In general sense, driving behavior can be trained using the central images becau
 
 But from inutition, if our car goes off lane (for example, distraction during text and drive), we can adjust it back on track right away. The machine doesn't have this intuition, so once it goes off road it would be hard to recover. To teach the machine this kind of recovery knowledge, we have to show it the scenarios. Hence, we use left and right camera images. Udacity gives out a great hint how to apply this method.
 >In the simulator, you can weave all over the road and turn recording on and off. In a real car, however, that’s not really possible. At least not legally.
->So in a real car, we’ll have multiple cameras on the vehicle, and we’ll map recovery paths from each camera. **For example, if you train the model to associate a given image from the center camera with a left turn, then you could also train the model to associate the corresponding image from the left camera with a somewhat softer left turn. And you could train the model to associate the corresponding image from the right camera with an even harder left turn.
+>So in a real car, we’ll have multiple cameras on the vehicle, and we’ll map recovery paths from each camera. **For example, if you train the model to associate a given image from the center camera with a left turn, then you could also train the model to associate the corresponding image from the left camera with a somewhat softer left turn. And you could train the model to associate the corresponding image from the right camera with an even harder left turn.**
 
 So the task is to determine when the car is turning left or right, pick out a set of its left or right images and add/subtract with an adjustment angle for recovery. The chosen left/right images and adjusted angles are then added into driving left or driving right lists. Here is the logic:
   1. Left turn: + adjustment_angle on left image, - adjustment_angle on right image
@@ -107,7 +107,9 @@ To run test: `python drive.py model.json`
 ![track2](https://github.com/annyhere/SDC-P3-BehavioralCloning/blob/master/track2.gif)
 
 # Future work
-1. Find a way to collect personal good data to train.
+1. Find a way to collect personal good data to train. :white_check_mark:
+Successfully collected data using keyboard driving to pass Track 1
+![track1self](https://youtu.be/mR6Gswp5Xmo)
 2. Try out comma.ai and VGG16 model, as other students were successfully using those model.
 2. Looking into even a smaller working architecture and making shorter code.
 
