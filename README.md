@@ -101,9 +101,13 @@ The final working weight was trained with 20 epoch, 0.27 adjustment angle and 12
 Use the training model that was saved in `model.json`, and weights in `model.h5`. Make sure the feeding images from test track is preprocessed as well to match with final training images shape in the training model.
 
 To run test: `python drive.py model.json`
+
 https://youtu.be/mR6Gswp5Xmo
+
 ![track1](https://github.com/annyhere/SDC-P3-BehavioralCloning/blob/master/track1.gif)
+
 https://youtu.be/hZfchwEIqqU
+
 ![track2](https://github.com/annyhere/SDC-P3-BehavioralCloning/blob/master/track2.gif)
 
 # Future work
