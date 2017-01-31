@@ -6,6 +6,16 @@ The scope of project is to teach car about human driving behavior using deep lea
 3. Udacity Car Simulation on [Window x64](https://d17h27t6h515a5.cloudfront.net/topher/2016/November/5831f3a4_simulator-windows-64/simulator-windows-64.zip)
 4. Udacity [sample data](https://d17h27t6h515a5.cloudfront.net/topher/2016/December/584f6edd_data/data.zip)
 
+## Files and Usage
+`model.py` : training codes.
+
+`model.json`: saved training model.
+
+`model.h5`: saved training weight.
+
+`drive.py`: code that take in image from the simulation and run through `model.json` and `model.h5` to predict steering angle.
+
+To use: start Simulator, pick track and choose Autonomous mode. On terminal, access to folder where the files are saved and type `python drive.py model.json`
 ### Quickstart
 **1. Control of the car is by using button on PC keyboard or joystick or game controller.**
 
