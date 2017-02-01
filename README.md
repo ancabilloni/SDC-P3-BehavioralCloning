@@ -61,7 +61,7 @@ Central images and steering angles are shuffle and split into 90/10 for Training
 
 Training data is then divided into 3 lists, driving straight, driving left, driving right which are determined by thresholds of angle limit. Any angle > 0.15 is turning right, any angle < -0.15 is turning left, anything around 0 or near 0 is driving straight.
 
-### Argumentation
+### Data Augmentation
 From the observation in both tracks, there are many factor of road condition and environment to account for. Below are argumentation methods:
 
 1. Dark and bright environement: user chooses to generate random brightness by adjusting V channel of HSV colorspace in each image.
@@ -89,9 +89,9 @@ So the task is to determine when the car is turning left or right, pick out a se
 2. To help running a smaller training model, images are scaled to (64x64) size from cropped size (80x320).
 
 ### Generators
-The model is trained using Keras with Tensorflow backend. My goal is to not generate extra data from what has been collected. To help always getting new training samples by apply random argumentation, fit_generator() is used to fit the training model.
+The model is trained using Keras with Tensorflow backend. My goal is to not generate extra data from what has been collected. To help always getting new training samples by apply random augmentation, fit_generator() is used to fit the training model.
 
-There are two generators in this project. **Training generator** is to generate samples per batches to feed into fit_generator(). At each batch, random samples are picked, applied argumentation and preprocessing . So training samples feeding into model is always different. **Validation generator** is also to feed random samples in batches for validation, unlike training generator, only central images are used here and only proprocessing is applied.
+There are two generators in this project. **Training generator** is to generate samples per batches to feed into fit_generator(). At each batch, random samples are picked, applied augmentation and preprocessing . So training samples feeding into model is always different. **Validation generator** is also to feed random samples in batches for validation, unlike training generator, only central images are used here and only proprocessing is applied.
 
 ### Training
 After many trial and error in modify Nvidia model, below are my best working model.
